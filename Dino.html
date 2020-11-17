@@ -9,37 +9,37 @@
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.0/dist/aframe-extras.min.js"></script>
     <script src="https://ghcdn.rawgit.org/chenzlabs/aframe-ar/8a7ee3b/dist/aframe-ar.min.js"></script>
     <script>
-    
-    // AFRAME no longer sends intersection event every time intersection changes position;
-    // this component is modified from docs to move a different entity than the one hit.
-    AFRAME.registerComponent('raycaster-move', {
-        schema: {
-            target: {type: 'selector'}
-        },
-        init: function () {
-            // Use events to figure out what raycaster is listening so we don't have to
-            // hardcode the raycaster.
-            this.el.addEventListener('raycaster-intersected', evt => {
-                this.raycaster = evt.detail.el;
-            });
-            this.el.addEventListener('raycaster-intersected-cleared', evt => {
-                this.raycaster = null;
-            });
-        },
-        update: function (oldData) {
-            //
-        },
-        tick: function () {
-            if (!this.raycaster) { return; }  // Not intersecting.
 
-            let intersection = this.raycaster.components.raycaster.getIntersection(this.el);
-            if (!intersection) { return; }
-            //console.log(intersection.point);
-            this.data.target.setAttribute("position", intersection.point);
-        }
-    });
-    
-    </script>    
+        // AFRAME no longer sends intersection event every time intersection changes position;
+        // this component is modified from docs to move a different entity than the one hit.
+        AFRAME.registerComponent('raycaster-move', {
+            schema: {
+                target: { type: 'selector' }
+            },
+            init: function () {
+                // Use events to figure out what raycaster is listening so we don't have to
+                // hardcode the raycaster.
+                this.el.addEventListener('raycaster-intersected', evt => {
+                    this.raycaster = evt.detail.el;
+                });
+                this.el.addEventListener('raycaster-intersected-cleared', evt => {
+                    this.raycaster = null;
+                });
+            },
+            update: function (oldData) {
+                //
+            },
+            tick: function () {
+                if (!this.raycaster) { return; }  // Not intersecting.
+
+                let intersection = this.raycaster.components.raycaster.getIntersection(this.el);
+                if (!intersection) { return; }
+                //console.log(intersection.point);
+                this.data.target.setAttribute("position", intersection.point);
+            }
+        });
+
+    </script>
 
     <script>
         AFRAME.registerComponent('shadow-material', {
@@ -50,7 +50,11 @@
         });
     </script>
     <!-- Prevent touch causing flicker on iOS. -->
-    <style> * { -webkit-tap-highlight-color: rgba(0,0,0,0); } </style>        
+    <style>
+        * {
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+    </style>
 </head>
 
 <body>
@@ -58,14 +62,18 @@
         <!-- Specify raycaster="objects:none" to avoid intersections with A-Frame entities like the fox. -->
         <a-camera user-height="0" cursor="fuse:false" ar-raycaster raycaster="objects:none"></a-camera>
         <a-entity id="walker" position="0 0 -5" visible="false">
-            <a-entity gltf-model="models/fox.glb" scale="0.5 0.5 0.5" id="fox" animation-mixer="clip:Fox_Idle" shadow="cast: true">
+            <a-entity gltf-model="models/fox.glb" scale="0.5 0.5 0.5" id="fox" animation-mixer="clip:Fox_Idle"
+                shadow="cast: true">
             </a-entity>
-            <a-plane width="0.4" height="0.4" position="0 0 0" rotation="-90 0 0" color="white" shadow="receive: true" shadow-material></a-plane>
+            <a-plane width="0.4" height="0.4" position="0 0 0" rotation="-90 0 0" color="white" shadow="receive: true"
+                shadow-material></a-plane>
         </a-entity>
         <a-entity id="walker2" position="0 0 -5" visible="false">
-            <a-entity gltf-model="models/dino.glb" id="dino"  scale="0.5 0.5 0.5" animation-mixer="clip:Idle" shadow="cast: true">
+            <a-entity gltf-model="models/dino.glb" id="dino" scale="0.5 0.5 0.5" animation-mixer="clip:Idle"
+                shadow="cast: true">
             </a-entity>
-            <a-plane width="0.9" height="0.9" position="0 0 0" rotation="-90 0 0" color="white" shadow="receive: true" shadow-material></a-plane>
+            <a-plane width="0.9" height="0.9" position="0 0 0" rotation="-90 0 0" color="white" shadow="receive: true"
+                shadow-material></a-plane>
         </a-entity>
         <a-sphere id="intersection" visible="false" radius="0.02" color="red"></a-sphere>
     </a-scene>
@@ -106,7 +114,7 @@
         function onceSceneLoaded() {
             let raycaster = document.querySelector('[ar-raycaster]');
             let marker = document.querySelector('#intersection');
-            
+
             activateDino();
 
             raycaster.addEventListener('raycaster-intersection', function (event) {
@@ -133,8 +141,8 @@
                 lastEvent = currentEvent;
 
                 const targetPosition = raycaster.components.cursor
-                  // this is broken in current A-Frame 1.0.x --> .intersection.point;
-                  .intersectedEventDetail.intersection.point;
+                    // this is broken in current A-Frame 1.0.x --> .intersection.point;
+                    .intersectedEventDetail.intersection.point;
                 if (!walker.getAttribute('visible')) {
                     walker.setAttribute('visible', true);
                     walker.setAttribute('position', stringify(targetPosition));
@@ -147,18 +155,18 @@
                     fox.setAttribute('animation-mixer', { clip: walkAnimation });
                     // only add completion listener once
                     if (!walker.getAttribute('animation')) {
-                      // once it's there,
-                      walker.addEventListener('animationcomplete', () => { 
-                        // make it look like it's idle                    
-                        fox.setAttribute('animation-mixer', { clip: idleAnimation });
-                      });
+                        // once it's there,
+                        walker.addEventListener('animationcomplete', () => {
+                            // make it look like it's idle                    
+                            fox.setAttribute('animation-mixer', { clip: idleAnimation });
+                        });
                     }
                     // set the animation in new A-Frame 1.0.x style
                     walker.setAttribute('animation', {
-                      property: 'position',
-                      to: stringify(targetPosition), // just targetPosition doesn't work!?
-                      dur: distance * 3000,
-                      easing: 'linear'                      
+                        property: 'position',
+                        to: stringify(targetPosition), // just targetPosition doesn't work!?
+                        dur: distance * 3000,
+                        easing: 'linear'
                     });
                     // toggle marker color to show we're doing it 
                     marker.setAttribute('color', 'blue');
@@ -166,68 +174,9 @@
                 }
             });
         }
-        /*
-        function tryAgain() {
-            recognition.stop();
-            setTimeout(() => { recognition.start(); });          
-        }
-        
-        function onCommand(results) {
-            tryAgain();
-            for (const result of results) {
-                for (const { transcript } of Array.from(result)) {
-                    if (transcript.toLowerCase().includes('dino') || transcript.toLowerCase().includes('dina')) {
-                        activateDino();
-                    }
-                    if (transcript.toLowerCase().includes('fox')) {
-                        activateFox();
-                    }
-                    const animations = sitting ? {
-                        'Stand up': 'Sit_Up',
-                        'Eat': 'Sit_Eat',
-                        'Chew': 'Sit_Chew',
-                        'Look left': 'Sit_Head_Left',
-                        'Look right': 'Sit_Head_Right', 
-                    } : {
-                        'Look left': 'Head_Left',
-                        'Look right': 'Head_Right', 
-                        'Chew': 'Chew',
-                        'Drink': 'Drink',
-                        'Jump': 'Jump',
-                        'Head': 'Attack1',
-                        'Attack': 'Attack2',
-                        'Sit Down': 'Sit',
-                        'Eat': 'Eat2',
-                        'Run': 'Run',
-                    };
-                    for (const animationKey of Object.keys(animations)) {
-                        if (transcript.toLowerCase().includes(animationKey.toLowerCase())) {
-                            playAnimation(animations[animationKey]);
-                            return;
-                        }
-                    }
-                    if (transcript.toLowerCase().includes('random')) {
-                        const animationKey = Object.keys(animations)[Math.floor(Math.random() * Object.keys(animations).length)];
-                        playAnimation(animations[animationKey]);
-                        return;
-                    }
-                }
-            }
-        }
-        
-        try {
-            
-        recognition = new webkitSpeechRecognition();
-        recognition.continuous = true;
-        recognition.maxAlternatives = 5;
-        recognition.onresult = ({results}) => onCommand(results);
-        recognition.onerror = () => setTimeout(tryAgain, 500);
-        recognition.start();
 
-        } catch (err) { console.error(err.message); }
-        */
         scene.addEventListener('loaded', onceSceneLoaded);
-        
+
     </script>
 </body>
 
