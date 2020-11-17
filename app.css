@@ -1,0 +1,18 @@
+body{
+    background-color: rgb(182, 226, 215);
+}
+
+h1{
+    padding: 25;
+}
+
+button{
+    width: 200px;
+    height: 50px;
+    font-size: 1em;
+    padding: 0 1em;
+    margin: 1em;
+    border-radius: 0.5em;
+    background-color: #2a9d8f;
+    color: white;
+}
